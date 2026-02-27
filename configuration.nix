@@ -77,5 +77,29 @@
   programs.niri.enable = true;
   programs.steam.enable = true;
 
+  fileSystems."/mnt/windows" = {
+    device = "/dev/nvme1n1p3";
+    fsType = "ntfs-3g";
+    options = [
+      "rw"
+      "uid=1000"
+      "gid=1000"
+      "dmask=022"
+      "fmask=133"
+      "nofail"
+    ];
+  };
+
+  systemd.services.windows-symlinks = {
+    description = "Create Windows partition symlinks.";
+    after = [ "mnt-windows.mount" ];
+    wants = [ "mnt-windows.mount" ];
+    wantedBy = [ "multi-user.target" ];
+    script = ''
+      ln -sfn /mnt/windows/Users/dismint/Documents /home/dimsint/Wow
+    '';
+    serviceConfig.Type = "oneshot";
+  };
+
   system.stateVersion = "25.11";
 }
