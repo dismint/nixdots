@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -19,6 +20,8 @@
 
   networking.hostName = "dismint";
   networking.networkmanager.enable = true;
+  networking.firewall.allowedTCPPorts = [ 7777 ];
+  networking.firewall.allowedUDPPorts = [ 7777 ];
 
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -38,6 +41,7 @@
   nixpkgs.config.allowUnfree = true;
   # because these are system wide packages, mandate a comment for why they belong
   environment.systemPackages = with pkgs; [
+    bash # of course
     eza # fish dependency
     firefox # default lightweight browser
     fish # shell
@@ -88,17 +92,6 @@
       "fmask=133"
       "nofail"
     ];
-  };
-
-  systemd.services.windows-symlinks = {
-    description = "Create Windows partition symlinks.";
-    after = [ "mnt-windows.mount" ];
-    wants = [ "mnt-windows.mount" ];
-    wantedBy = [ "multi-user.target" ];
-    script = ''
-      ln -sfn /mnt/windows/Users/dismint/Documents /home/dimsint/Wow
-    '';
-    serviceConfig.Type = "oneshot";
   };
 
   system.stateVersion = "25.11";
